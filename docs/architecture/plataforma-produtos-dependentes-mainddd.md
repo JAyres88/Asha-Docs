@@ -66,6 +66,31 @@ Um produto pode manter uma projeção local de leitura com nome do cliente, cód
 
 MRP II significa *Manufacturing Resource Planning*. Ele possui regras próprias de planejamento e produção; MainDDD fornece a referência oficial a materiais e posições de estoque, mas não deve absorver as regras de capacidade, roteiro ou ordem de produção.
 
+## Administração separada do PDV
+
+O produto MainPDV terá duas áreas distintas, com navegação e permissões próprias.
+
+| Área | Público | Responsabilidades |
+| --- | --- | --- |
+| Operação de PDV | Operadores e gestores autorizados. | Abrir e fechar caixa, registrar vendas, pagamentos, cancelamentos permitidos e emissão fiscal operacional. |
+| Administração do PDV | Somente usuários com perfil administrador. | Configuração empresarial, fiscal, terminais, caixas, meios de pagamento, séries, regras e parâmetros operacionais. |
+
+A entrada principal do PDV deve abrir diretamente a operação. Menus de configuração fiscal e empresarial não fazem parte do menu operacional, nem devem aparecer para operadores. A administração terá rota e página próprias, por exemplo `/pdv/administracao`, podendo ser oferecida como uma entrada administrativa separada no portal para quem tiver a permissão adequada.
+
+```mermaid
+flowchart TD
+    Portal[Portal Main] --> PDV[PDV: operação]
+    Portal --> Admin[Administração do PDV]
+    Operador[Operador] --> PDV
+    Gestor[Gestor autorizado] --> PDV
+    Administrador[Administrador] --> PDV
+    Administrador --> Admin
+```
+
+A ocultação no frontend serve apenas para simplificar a experiência. O backend do MainPDV deve aplicar uma política própria, como `PDV.ConfiguracoesGerenciar`, e validá-la em toda API administrativa. Essa permissão pode ser concedida ao papel `Administrador` do tenant; gestores e operadores não a recebem por padrão.
+
+Mudanças fiscais e empresariais precisam de auditoria: usuário responsável, data, valores anterior e posterior, correlação da alteração e, quando aplicável, período de vigência. A configuração efetiva usada em uma venda ou documento fiscal deve ficar registrada para preservar rastreabilidade, mesmo após alterações posteriores.
+
 ## Regras de integração
 
 Os produtos não acessam `DbContext`, repositórios, tabelas nem DLLs de domínio ou infraestrutura de outro backend. A integração deve acontecer pelos contratos públicos do produto proprietário.
