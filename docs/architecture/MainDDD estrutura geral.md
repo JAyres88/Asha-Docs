@@ -1,6 +1,6 @@
 # MainDDD estrutura geral
 
-Estrutura implementada na branch `refactor/modular-monolith`, em 08/09/2026. Esta revisão acompanha a modularização; sua disponibilidade em DEV depende da integração da [PR #106](https://github.com/JAyres88/MainDDD/pull/106).
+Este documento descreve a estrutura modular atual do MainDDD. A modularização já está integrada: os módulos possuem bibliotecas próprias e continuam reunidos em uma única aplicação e banco de dados.
 
 ## Visão geral
 
@@ -60,7 +60,7 @@ Os sete módulos seguem esse padrão. Cada `.csproj` compila seus próprios arqu
 | --- | --- | --- |
 | Domain | Entidades, agregados, eventos, políticas e contratos de repositório. | Documento, DocumentoItem, PoliticaComercialDocumento. |
 | Contracts | Contratos públicos e DTOs utilizados por outros módulos ou pela apresentação. | DocumentoCreateDTO, IDocumentoCommandService. |
-| Application | Casos de uso, mensagens, handlers, validação e mapeamentos. | CriarDocumentoHandler, DocumentoCommandService, DocumentoCreateDTOValidator. |
+| Application | Casos de uso, mensagens, handlers, validação e mapeamentos. | CriarDocumentoHandler, CriarDocumentoCommand, DocumentoCreateDTOValidator. |
 | Infrastructure | Repositórios, consultas, serviços concretos e registro do módulo. | DocumentoRepository, DocumentoQueryService, DocumentosModule. |
 | Presentation | Endpoints HTTP. | DocumentoController. |
 
@@ -82,7 +82,7 @@ Contracts foi separado para permitir que um módulo consuma operações de outro
 
 `BuildingBlocks/Domain` contém Entity, AggregateRoot, Guard, contratos de eventos e tipos compartilhados em `Shared`, como objetos de valor e bases de especificação. `BuildingBlocks/Application` contém mensagens, resultados e paginação.
 
-`Core/Application` agora mantém abstrações comuns, exceções, parâmetros básicos e `ModuleApplicationRegistration`. O registro recebe explicitamente o assembly Application de cada módulo para descobrir seus handlers e mapeamentos. DTOs, validadores e perfis específicos saíram do Core e foram para seus módulos.
+`Core/Application` mantém abstrações comuns, exceções, parâmetros básicos e `ModuleApplicationRegistration`. O registro recebe explicitamente o assembly Application de cada módulo para descobrir handlers e mapeamentos. DTOs, validadores e perfis específicos pertencem aos módulos.
 
 `Core/Utilities` contém utilitários ainda compilados por MainAPI.Application.
 

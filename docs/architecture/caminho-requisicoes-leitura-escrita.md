@@ -2,7 +2,7 @@
 
 Este guia acompanha duas operações reais do MainDDD: consultar um documento por ID e criar um documento com itens. Explica a sequência de chamadas, as responsabilidades das classes e as tecnologias que participam de cada etapa.
 
-Base: código local do MainDDD, atualizado em 08/09/2026 para a branch `refactor/modular-monolith`. Os fluxos funcionais foram preservados na extração das DLLs; a integração na branch principal depende da PR correspondente. Os links de código pressupõem que MainDocs e MainDDD estão em pastas irmãs.
+Base: estrutura CQRS modular atual do MainDDD. Os exemplos usam o módulo Documentos porque ele reúne leitura, escrita, agregado, idempotência, estoque e outbox. Os caminhos de código são relativos à raiz do MainDDD.
 
 ## 1. Visão geral
 
