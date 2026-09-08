@@ -146,7 +146,9 @@ Tenant A
 └── MainMRPII         ativo
 ```
 
-O portal lista somente os produtos habilitados para o tenant e para as permissões do usuário. Cada backend também valida a licença e o tenant em suas próprias APIs. Ocultar o cartão no portal melhora a experiência, mas não é controle de acesso suficiente.
+O portal lista somente os produtos habilitados para o tenant e para as permissões do usuário. No MainDDD, o seletor pós-login mantém as áreas do **MainDDD Base** — cadastros e documentos — e consulta `GET /api/identidade-acesso/modulos` para acrescentar os produtos especializados licenciados. A licença tem período de vigência e endereço de acesso; o cartão do PDV só aparece com uma licença ativa e abre o MainPDV.
+
+Cada backend também valida a licença e o tenant em suas próprias APIs. Ocultar o cartão no portal melhora a experiência, mas não é controle de acesso suficiente.
 
 Cada produto declara seus pré-requisitos. Neste desenho, todos os produtos especializados exigem `MainDDD Base` ativo. Um produto pode ter recursos internos adicionais, como emissão fiscal no PDV ou planejamento avançado no MRP II, licenciados como capacidades do próprio produto.
 
