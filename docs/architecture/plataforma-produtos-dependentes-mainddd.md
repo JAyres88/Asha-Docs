@@ -87,7 +87,7 @@ flowchart TD
     Administrador --> Admin
 ```
 
-A ocultação no frontend serve apenas para simplificar a experiência. O backend do MainPDV deve aplicar uma política própria, como `PDV.ConfiguracoesGerenciar`, e validá-la em toda API administrativa. Essa permissão pode ser concedida ao papel `Administrador` do tenant; gestores e operadores não a recebem por padrão.
+A ocultação no frontend serve apenas para simplificar a experiência. O backend do MainPDV aplica a política `Pdv.Administracao.Gerenciar` em toda API administrativa. Essa permissão é concedida aos papéis `Proprietário` e `Administrador`; gestores e operadores não a recebem por padrão.
 
 Mudanças fiscais e empresariais precisam de auditoria: usuário responsável, data, valores anterior e posterior, correlação da alteração e, quando aplicável, período de vigência. A configuração efetiva usada em uma venda ou documento fiscal deve ficar registrada para preservar rastreabilidade, mesmo após alterações posteriores.
 

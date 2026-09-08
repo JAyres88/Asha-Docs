@@ -1,6 +1,6 @@
 # Fundação DDD
 
-Esta fundação é adotada de forma incremental. As entidades existentes continuam funcionando e passam a usar as novas abstrações somente durante a refatoração de cada módulo.
+O MainDDD aplica estes fundamentos em seus módulos. Eles orientam a separação entre domínio, aplicação, infraestrutura e contratos públicos.
 
 ## Domínio
 
@@ -31,4 +31,4 @@ Esta fundação é adotada de forma incremental. As entidades existentes continu
 3. Agregados protegem seus invariantes e publicam eventos.
 4. Repositórios são definidos por abstrações e implementados na infraestrutura.
 5. DTOs da API não são entidades de domínio.
-6. Cada módulo será migrado em uma PR própria, com contratos protegidos por testes.
+6. Alterações em contratos públicos são protegidas por testes de contrato.
