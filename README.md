@@ -4,6 +4,8 @@ Projeto dedicado exclusivamente à documentação do MainDDD.
 
 ## Documentação
 
+- [MainDDD estrutura geral](docs/architecture/MainDDD%20estrutura%20geral.md)
+
 - [Caminho de uma requisição: leitura e escrita com agregado](docs/architecture/caminho-requisicoes-leitura-escrita.md)
 
 - [Contratos protegidos da API](docs/architecture/api-contracts.md)

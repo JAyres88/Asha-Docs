@@ -2,7 +2,7 @@
 
 Este guia acompanha duas operações reais do MainDDD: consultar um documento por ID e criar um documento com itens. Explica a sequência de chamadas, as responsabilidades das classes e as tecnologias que participam de cada etapa.
 
-Base: código local do MainDDD inspecionado em 08/09/2026, commit `515a365`. Os fluxos descrevem a implementação existente nessa revisão. Os links de código pressupõem que MainDocs e MainDDD estão em pastas irmãs.
+Base: código local do MainDDD, atualizado em 08/09/2026 para a branch `refactor/modular-monolith`. Os fluxos funcionais foram preservados na extração das DLLs; a integração na branch principal depende da PR correspondente. Os links de código pressupõem que MainDocs e MainDDD estão em pastas irmãs.
 
 ## 1. Visão geral
 
@@ -22,11 +22,11 @@ Uma requisição chega pela API HTTP, passa pela autenticação e autorização 
 
 Aqui, **agregação significa um agregado DDD**: `Documento` é a raiz, com `DocumentoItem` e saldos documentais sob sua coordenação. O cálculo dos totais é uma das regras desse agregado, mas não é o significado completo do termo.
 
-A separação CQRS é feita dentro da mesma aplicação e usa o mesmo `AppDbContext` e banco. Não há exigência de bancos separados para leitura e escrita. As pastas dos módulos também não representam, por si só, serviços executados separadamente: `MainAPI.csproj` inclui os arquivos de apresentação e infraestrutura dos módulos.
+A separação CQRS é feita dentro da mesma aplicação e usa o mesmo `AppDbContext` e banco. Não há exigência de bancos separados para leitura e escrita. Cada módulo possui DLLs Domain, Contracts, Application e Infrastructure. `MainAPI.csproj` referencia suas bibliotecas e compila os controllers de Presentation. O conjunto continua sendo uma única aplicação.
 
 ## 2. Entrada comum aos dois caminhos
 
-1. **Configuração na inicialização:** `Program` chama `ApplicationService.AddMainApplication()`, `DatabaseService.ConfigureDatabase()` e `AuthenticationService.ConfigureAuthentication()`. São registrados controllers, handlers, repositórios, mapeamentos, validadores e serviços.
+1. **Configuração na inicialização:** `Program` chama `ApplicationService.AddMainApplication()`, `DatabaseService.ConfigureDatabase()` e `AuthenticationService.ConfigureAuthentication()`. ApplicationService chama as entradas Add<Modulo>Module, que registram implementações, validadores e descobrem handlers e mapeamentos no assembly Application de cada módulo. O host registra os controllers e a infraestrutura comum.
 2. **Recebimento HTTP:** o pipeline contém `ExceptionHandlingMiddleware`, um middleware que preenche `HttpContext.Items["HoraGlobal"]`, roteamento, CORS em Development, autenticação e autorização. Os controllers são expostos por `MapControllers()`.
 3. **Identificação do usuário:** `DevAuthenticationHandler` consulta usuário e tenant ativos e constrói suas claims. A configuração atual aceita somente Development; fora desse ambiente, a inicialização lança exceção informando que Microsoft Entra ainda não foi configurado.
 4. **Permissão:** a política do endpoint é avaliada por `PermissaoAuthorizationHandler`. Ler exige `Permissoes.DocumentosLer`; criar exige `Permissoes.DocumentosCriar`. Uma requisição pode terminar antes de chegar ao controller por falta de autenticação ou permissão.
@@ -229,36 +229,39 @@ As versões abaixo são as declaradas em `MainAPI.csproj` na revisão consultada
 
 ### Entrada e infraestrutura compartilhada
 
-- [Program.cs](../../../MainDDD/src/MainAPI/Program.cs)
-- [ApplicationService.cs — registros de dependência](../../../MainDDD/src/MainAPI/Infrastructure/Shared/Services/ApplicationService.cs)
-- [CqrsSender.cs](../../../MainDDD/src/MainAPI/Infrastructure/Shared/Services/CqrsSender.cs)
-- [LoggingBehavior.cs](../../../MainDDD/src/MainAPI/Infrastructure/Shared/Services/LoggingBehavior.cs)
-- [AuthenticationService.cs](../../../MainDDD/src/Modules/IdentidadeAcesso/Infrastructure/Services/AuthenticationService.cs)
-- [DevAuthenticationHandler.cs](../../../MainDDD/src/Modules/IdentidadeAcesso/Infrastructure/Security/DevAuthenticationHandler.cs)
-- [ExceptionHandlingMiddleware.cs](../../../MainDDD/src/MainAPI/Infrastructure/Shared/Services/ExceptionHandlingMiddleware.cs)
-- [MainAPI.csproj — tecnologias e composição](../../../MainDDD/src/MainAPI/MainAPI.csproj)
+- [Program.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/MainAPI/Program.cs)
+- [ApplicationService.cs — registros de dependência](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/MainAPI/Infrastructure/Shared/Services/ApplicationService.cs)
+- [CqrsSender.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/MainAPI/Infrastructure/Shared/Services/CqrsSender.cs)
+- [LoggingBehavior.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/MainAPI/Infrastructure/Shared/Services/LoggingBehavior.cs)
+- [AuthenticationService.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/IdentidadeAcesso/Infrastructure/Services/AuthenticationService.cs)
+- [DevAuthenticationHandler.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/IdentidadeAcesso/Infrastructure/Security/DevAuthenticationHandler.cs)
+- [ExceptionHandlingMiddleware.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/MainAPI/Infrastructure/Shared/Services/ExceptionHandlingMiddleware.cs)
+- [MainAPI.csproj — tecnologias e composição](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/MainAPI/MainAPI.csproj)
 
 ### Leitura e escrita
 
-- [DocumentoController.cs](../../../MainDDD/src/Modules/Documentos/Presentation/DocumentoController.cs)
-- [DocumentoReadMessages.cs — queries e handlers](../../../MainDDD/src/Modules/Documentos/Application/Documentos/DocumentoReadMessages.cs)
-- [DocumentoQueryService.cs](../../../MainDDD/src/Modules/Documentos/Infrastructure/Queries/DocumentoQueryService.cs)
-- [DocumentoMappingProfile.cs](../../../MainDDD/src/Core/Application/Mappings/DocumentoMappingProfile.cs)
-- [DocumentoWriteMessages.cs — commands e handlers](../../../MainDDD/src/Modules/Documentos/Application/Documentos/DocumentoWriteMessages.cs)
-- [DocumentoCommandService.cs](../../../MainDDD/src/Modules/Documentos/Application/Documentos/DocumentoCommandService.cs)
-- [DocumentoCreateDTO.cs](../../../MainDDD/src/Core/Application/DTOs/Requests/DocumentoCreateDTO.cs)
-- [DocumentoCreateDTOValidator.cs](../../../MainDDD/src/Core/Application/Validators/DocumentoCreateDTOValidator.cs)
-- [NumeracaoDocumentoService.cs](../../../MainDDD/src/Modules/Documentos/Infrastructure/Services/NumeracaoDocumentoService.cs)
-- [Documento.cs — raiz do agregado](../../../MainDDD/src/Modules/Documentos/Domain/Entities/Documento.cs)
-- [DocumentoItem.cs](../../../MainDDD/src/Modules/Documentos/Domain/Entities/DocumentoItem.cs)
-- [PoliticaComercialDocumento.cs](../../../MainDDD/src/Modules/Documentos/Domain/Services/PoliticaComercialDocumento.cs)
+- [DocumentoController.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Presentation/DocumentoController.cs)
+- [DocumentoReadMessages.cs — queries e handlers](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Application/Documentos/DocumentoReadMessages.cs)
+- [DocumentoQueryService.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Infrastructure/Queries/DocumentoQueryService.cs)
+- [DocumentoMappingProfile.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Application/Mappings/DocumentoMappingProfile.cs)
+- [DocumentoWriteMessages.cs — commands e handlers](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Application/Documentos/DocumentoWriteMessages.cs)
+- [DocumentoCommandService.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Application/Documentos/DocumentoCommandService.cs)
+- [DocumentoCreateDTO.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Contracts/DTOs/Requests/DocumentoCreateDTO.cs)
+- [DocumentoCreateDTOValidator.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Application/Validators/DocumentoCreateDTOValidator.cs)
+- [NumeracaoDocumentoService.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Infrastructure/Services/NumeracaoDocumentoService.cs)
+- [Documento.cs — raiz do agregado](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Domain/Entities/Documento.cs)
+- [DocumentoItem.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Domain/Entities/DocumentoItem.cs)
+- [PoliticaComercialDocumento.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Domain/Services/PoliticaComercialDocumento.cs)
 
 ### Persistência e eventos
 
-- [DocumentoRepository.cs](../../../MainDDD/src/Modules/Documentos/Infrastructure/Repositories/DocumentoRepository.cs)
-- [EfTransactionService.cs](../../../MainDDD/src/MainAPI/Infrastructure/Shared/Services/EfTransactionService.cs)
-- [AppDbContext.cs](../../../MainDDD/src/MainAPI/Infrastructure/Shared/Persistence/AppDbContext.cs)
-- [DocumentoTableConfiguration.cs](../../../MainDDD/src/Modules/Documentos/Infrastructure/Persistence/Configurations/DocumentoTableConfiguration.cs)
-- [OutboxProcessor.cs](../../../MainDDD/src/Modules/Administracao/Infrastructure/Services/OutboxProcessor.cs)
+O contexto e as migrations pertencem a `Main.Persistence`. A DLL `MainAPI.Domain` mantém redirecionamento dos tipos de eventos antigos, preservando a leitura das mensagens já persistidas na outbox.
+
+
+- [DocumentoRepository.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Documentos/Infrastructure/Repositories/DocumentoRepository.cs)
+- [EfTransactionService.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Persistence/Services/EfTransactionService.cs)
+- [AppDbContext.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Persistence/Context/AppDbContext.cs)
+- [DocumentoTableConfiguration.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Persistence/Modules/Documentos/Configurations/DocumentoTableConfiguration.cs)
+- [OutboxProcessor.cs](https://github.com/JAyres88/MainDDD/blob/7c94cd3/src/Modules/Administracao/Infrastructure/Services/OutboxProcessor.cs)
 
 A documentação foi conferida por leitura do código. Não foram executadas requisições nem alterações no banco para produzir este guia.
