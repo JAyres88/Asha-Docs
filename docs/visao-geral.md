@@ -2,36 +2,36 @@
 
 ## Propósito
 
-A plataforma Gen combina uma base de gestão com produtos especializados. O cliente escolhe os produtos que utilizará, enquanto os cadastros corporativos necessários à operação permanecem no Gen.2 - Gestão. Cada cliente deve poder receber uma instalação própria, com configuração e versão independentes das demais.
+A plataforma Gen combina uma base de gestão com produtos especializados. O Portal apresenta os produtos e recebe os dados iniciais da organização. Os cadastros corporativos necessários à operação ficam no Gen.2 - Gestão.
 
-| Produto | Papel na plataforma | Responsabilidade principal |
+| Produto | Papel na plataforma | Responsabilidade atual |
 | --- | --- | --- |
-| Gen.1 - Portal | Entrada comercial | Apresentar os módulos, receber os dados iniciais da organização e acompanhar a preparação do ambiente. |
-| Gen.2 - Gestão | Base operacional | Manter cadastros compartilhados, documentos, estoque, administração e o contexto global de acesso aos módulos. |
-| Gen.3 - Ponto de Venda | Operação de loja | Executar vendas, caixa e consultas dos cadastros necessários à venda; enviar os fatos da operação para integração. |
-| Gen.4 - Identity | Identidade | Autenticar pessoas e serviços, emitir tokens e manter uma sessão de acesso entre os aplicativos da instalação. |
-| Gen.5 - Integração | Mediação entre produtos | Receber, rotear e acompanhar eventos e contratos de sincronização entre Gestão, PDV e futuros módulos. |
-| Gen.6 - Onboarding & Deploy | Preparação técnica | Receber a solicitação do Portal, registrar seu estado e preparar ou associar a instalação do cliente. |
+| Gen.1 - Portal | Entrada comercial | Apresentar os módulos, receber dados da organização e mostrar o andamento da preparação. |
+| Gen.2 - Gestão | Base operacional | Manter cadastros compartilhados, documentos, estoque, administração e contexto de acesso aos módulos. |
+| Gen.3 - Ponto de Venda | Operação de loja | Executar vendas e caixa, consultar os cadastros necessários e enviar eventos da operação. |
+| Gen.4 - Identity | Identidade | Autenticar pessoas e serviços e emitir tokens para os aplicativos. |
+| Gen.5 - Integração | Mediação entre produtos | Receber, rotear e acompanhar eventos e contratos entre Gestão e PDV. |
+| Gen.6 - Onboarding & Deploy | Preparação técnica | Registrar pedidos do Portal, processar suas etapas e associar a instalação local configurada. |
 
 ## Como os produtos se relacionam
 
-O Portal inicia a jornada de aquisição. O cliente informa a organização, os responsáveis e os produtos desejados. O Gen.6 recebe o pedido de preparação e devolve o andamento e os endereços de acesso. O Gen.4 autentica o administrador e os usuários convidados. O Gen.2 mantém os cadastros básicos e o contexto global de módulos e direitos. O Gen.3 consulta os cadastros que lhe foram disponibilizados e envia eventos de venda pelo Gen.5.
+O Portal recebe a organização, os responsáveis e os módulos selecionados e envia um pedido ao Gen.6. O Gen.6 registra o andamento e devolve os endereços da instalação configurada. O Gen.4 autentica usuários e serviços. O Gen.2 mantém os cadastros básicos e o contexto global de módulos e direitos. O Gen.3 consulta os cadastros disponibilizados pela Gestão e envia eventos de venda ao Gen.5.
 
-O PDV depende dos cadastros comuns da Gestão, como locais, tipos de saldo, pessoas e produtos, mas não deve editar essas entidades. A escrita pertence ao sistema responsável pelo cadastro. A integração distribui somente os dados habilitados e transforma os eventos operacionais em documentos ou atualizações no destino. O mesmo padrão deve orientar produtos futuros.
+O PDV consulta dados comuns da Gestão, como locais, tipos de saldo, pessoas e produtos. A edição desses cadastros pertence à Gestão. O Gen.5 media os contratos de sincronização e os eventos entre os produtos.
 
 ## Estrutura interna do Gen.2
 
-O Gen.2 é um monólito modular: uma API e publicação reúnem bibliotecas separadas para Catálogo, Pessoas, Precificação, Documentos, Estoque, IdentidadeAcesso e Administração. Os módulos têm contratos e camadas próprias; a persistência SQL Server é compartilhada dentro dessa instalação para preservar transações de negócio. Isso não significa compartilhar o banco entre clientes.
+O Gen.2 é um monólito modular: uma API e publicação reúnem bibliotecas separadas para Catálogo, Pessoas, Precificação, Documentos, Estoque, IdentidadeAcesso e Administração. Os módulos têm contratos e camadas próprias. Dentro da instalação local configurada, usam uma persistência SQL Server compartilhada para preservar transações de negócio.
 
 ## Acesso e direitos
 
-O Gen.4 fornece a identidade usada pelos aplicativos de uma instalação. Após o login, a Gestão determina o contexto da organização e os módulos liberados; cada aplicativo aplica suas permissões específicas tanto na interface quanto nas APIs. A demonstração utiliza uma conta de consulta, sem poderes de cadastro ou administração.
+O Gen.4 fornece a identidade usada pelos aplicativos da instalação. A Gestão fornece o contexto de módulos e direitos; os aplicativos aplicam as permissões em suas interfaces e APIs. A demonstração usa uma conta de consulta, sem poderes de cadastro ou administração.
 
-A criação de uma organização e a entrada em uma organização existente são caminhos distintos. O fluxo comercial completo de pagamento, convite e ativação automática ainda depende de implementação e integração adicionais.
+A interface do Portal separa o cadastro de uma organização do acesso a uma organização existente. O formulário coleta os dados iniciais, mas não processa pagamentos.
 
-## Produtos futuros
+## Produtos apresentados para desenvolvimento futuro
 
-Projetos, CRM, Serviços e MRP II são propostas de módulos especializados. Eles podem ter aplicações e versões próprias, mas deverão usar os cadastros comuns da Gestão e os contratos do Gen.5. Sua presença na vitrine não significa que estejam prontos para contratação ou implantação.
+Projetos, CRM, Serviços e MRP II aparecem como propostas na vitrine. Ainda não são produtos implantáveis na stack local descrita aqui. Suas responsabilidades e sua integração serão especificadas quando cada produto for definido.
 
 ## Repositórios
 

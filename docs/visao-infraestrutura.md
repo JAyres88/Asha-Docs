@@ -1,45 +1,44 @@
-# Visão de infraestrutura
+# Visão de infraestrutura — AS IS
 
-## Modelo de hospedagem
+Este documento registra a configuração local e o comportamento que podem ser verificados no código e no manifesto de implantação. Ele não define a arquitetura futura de alocação por cliente.
 
-O primeiro provedor de hospedagem é um computador local com Docker Desktop e Docker Swarm. Um gateway Traefik encaminha as requisições aos serviços. O domínio sysgen.win usa Cloudflare DNS e um Cloudflare Tunnel para levar HTTPS ao gateway sem expor SQL Server, RabbitMQ ou APIs internas diretamente à internet.
+## Hospedagem e publicação
 
-No ambiente atual, o Portal, o gateway, o túnel e o registro local de imagens formam a base de publicação. A stack de demonstração contém Gen.2, Gen.3, Gen.4, Gen.5 e Gen.6, SQL Server e RabbitMQ. O SQL Server guarda bancos separados por aplicação dentro da instalação; RabbitMQ transporta mensagens entre serviços. Docker secrets e configurações fora do Git fornecem senhas e parâmetros de execução.
+O computador local utiliza Docker Desktop e Docker Swarm. O Traefik encaminha as requisições para as aplicações pela rota de entrada. O domínio sysgen.win usa Cloudflare DNS e Cloudflare Tunnel para levar HTTPS ao gateway. SQL Server, RabbitMQ, Provisioning e APIs internas não têm rotas públicas dedicadas.
 
-| Serviço | Função |
+A configuração de implantação mantém um registro local de imagens e uma rede Docker chamada main-provider. O manifesto da stack main reúne os aplicativos, SQL Server e RabbitMQ. As imagens são construídas e versionadas por scripts do Gen.6. Docker secrets e arquivos locais fora do Git fornecem senhas e parâmetros de execução.
+
+| Serviço | Uso na configuração local |
 | --- | --- |
-| Docker Desktop + Swarm | Executar e administrar serviços, redes, volumes, configurações e segredos. |
-| Registro local de imagens | Guardar imagens versionadas antes da implantação. |
-| Traefik | Selecionar o serviço pela rota de entrada e encaminhar o tráfego. |
-| Cloudflare Tunnel | Conectar os endereços públicos ao gateway por uma conexão de saída. |
-| Gen.1 - Portal | Vitrine e entrada do registro da organização. |
-| Gen.6 API + worker | Persistir pedidos, executar etapas de preparação e publicar seu estado. |
-| Gen.4 - Identity | Login OIDC/OAuth2 e tokens para usuários e serviços. |
-| Gen.2 - Gestão | Cadastros e operação corporativa. |
-| Gen.3 - Ponto de Venda | API e interface de vendas. |
-| Gen.5 - Integração | API, interface operacional e distribuição de eventos. |
-| SQL Server | Persistência de cada aplicação. |
-| RabbitMQ | Mensageria interna. |
+| Docker Desktop + Swarm | Executa serviços e administra redes, volumes, configurações e segredos. |
+| Registro local de imagens | Armazena as imagens versionadas usadas pela stack. |
+| Traefik | Encaminha o tráfego de entrada conforme o hostname. |
+| Cloudflare Tunnel | Conecta os endereços públicos ao gateway por conexão de saída. |
+| Gen.1 - Portal | Apresenta módulos e recebe o formulário da organização. |
+| Gen.6 API + worker | Persiste solicitações, executa etapas e retorna seu estado. |
+| Gen.4 - Identity | Autentica usuários e serviços com OIDC/OAuth2. |
+| Gen.2 - Gestão | Hospeda a API, a interface e os módulos da base operacional. |
+| Gen.3 - Ponto de Venda | Hospeda a API e a interface de vendas. |
+| Gen.5 - Integração | Hospeda a API, a interface e o processamento de integração. |
+| SQL Server | Mantém bancos separados por aplicação nessa stack. |
+| RabbitMQ | Transporta mensagens internas. |
 
-Hoje os endereços públicos preparados são portal.sysgen.win, gestao.sysgen.win, pdv.sysgen.win e login.sysgen.win. Integration, Provisioning, SQL Server e RabbitMQ permanecem internos. A existência do DNS e do túnel não comprova que uma versão específica esteja em execução; a implantação e a saúde dos serviços devem ser verificadas separadamente.
+Os hostnames preparados são portal.sysgen.win, gestao.sysgen.win, pdv.sysgen.win e login.sysgen.win. Todos chegam ao mesmo gateway pelo túnel. O gateway seleciona o serviço correspondente. DNS e túnel ativos não demonstram, por si só, que uma aplicação está saudável ou atualizada; a versão e a execução de cada serviço são verificadas no Swarm.
 
-## Alocação quando um cliente se registra
+## Registro de uma organização no ambiente local
 
-O fluxo de referência prevê uma instalação completa por cliente, com versão e customizações independentes. O computador pode hospedar várias instalações, mas compartilhar o equipamento não deve misturar seus dados, segredos, rede interna nem ciclo de atualização. O Portal e o Gen.6 continuam como serviços de controle do provedor.
+1. No Portal, a pessoa seleciona módulos e informa organização, contato comercial, administrador inicial, região de hospedagem e preferência de operação temporária sem internet.
+2. O Portal envia ao Gen.6 uma solicitação com identificador único. A API valida o pedido e o guarda no banco MainProvisioning.
+3. O worker busca a próxima solicitação pronta, grava o estado da etapa, registra tentativas e pode repetir uma etapa após uma falha.
+4. Com LocalProvisioning habilitado, a etapa LocalInstallationReadyStep associa à solicitação os endereços da instalação local já configurada. Ela sempre inclui Gestão e acrescenta PDV ou Integração conforme os códigos de módulo informados.
+5. O Gen.6 conclui a operação e devolve estado e endereços ao Portal. A tela de ativação consulta esse estado e apresenta o acesso à Gestão quando disponível.
 
-1. **Registro:** o Portal recebe a organização, o administrador inicial, os módulos escolhidos e preferências de operação. Envia ao Gen.6 um pedido com identificador único. A confirmação comercial e as condições de contratação devem ser verificadas antes de alocar recursos.
-2. **Reserva:** o Gen.6 verifica a capacidade disponível do host, reserva CPU, memória e armazenamento estimados e cria um identificador interno estável da instalação. Pedidos repetidos com o mesmo identificador não podem criar uma segunda instalação.
-3. **Preparação:** o Gen.6 gera a definição de stack do cliente a partir de um modelo versionado. O modelo escolhe as imagens aprovadas para aquele cliente e seus módulos licenciados. Uma versão customizada pode ser atribuída só a essa stack.
-4. **Isolamento:** o Swarm cria a stack, rede interna, volumes persistentes, segredos e bancos do cliente. O desenho exige uma instância SQL Server e um volume de dados próprios por cliente; RabbitMQ e Identity também pertencem à instalação do cliente. O gateway, o túnel e o registro de imagens podem ser compartilhados pelo provedor.
-5. **Inicialização:** migrations e dados iniciais são aplicados aos bancos do cliente. O Gen.4 cadastra o administrador inicial; a Gestão registra a organização e a licença, e os módulos contratados recebem suas configurações.
-6. **Publicação:** o Gen.6 cria rotas e endereços próprios do cliente no gateway e no túnel. Os nomes públicos devem ser únicos e os retornos de login devem apontar para a instalação correta. Nenhuma API interna ou banco recebe rota pública.
-7. **Verificação:** o Gen.6 aguarda saúde dos serviços, login, acesso à Gestão e aos módulos licenciados. Só então marca o pedido como concluído, devolve os links ao Portal e dispara a comunicação ao administrador.
-8. **Falha e repetição:** cada etapa grava estado e diagnóstico. Uma falha permite repetir a etapa sem duplicar volumes, usuários, rotas ou cobranças. Recursos reservados para uma tentativa cancelada precisam ser liberados explicitamente.
+Esse é o processamento do registro presente no código. O planejamento de uma forma diferente de alocar recursos e separar instalações pertence à definição do TO BE.
 
-A instalação de cada cliente pode ser atualizada ou revertida de forma independente. O provisionador deve manter o mapeamento entre organização, identificador da stack, versão das imagens, volumes, segredos, rotas e licença. A seleção de host e os limites de capacidade devem impedir que um novo cliente comprometa as instalações já ativas.
+## Persistência e operação
 
-## Limites operacionais
+A stack local usa um SQL Server com bancos distintos para Identity, Gestão, PDV, Integração e Provisioning. O manifesto monta volume persistente para SQL Server e outro para RabbitMQ. Os serviços compartilham a rede interna main-provider, enquanto o gateway e o túnel atendem aos endereços externos.
 
-Em um único computador, as instalações continuam dependendo do mesmo hardware, energia e conexão. Instâncias SQL Server, aplicações e mensageria próprias por cliente consomem recursos mesmo sem tráfego. O Gen.6 precisa aplicar limites de CPU, memória, disco e número de instalações, medir o uso real e recusar novas alocações quando não houver capacidade segura. Backups e restauração devem tratar cada cliente separadamente.
+O Swarm registra a escala desejada de cada serviço. Parar ou escalar uma aplicação para zero não remove imagens, volumes, bancos nem os serviços de infraestrutura. A saúde dos aplicativos, os logs e a versão das imagens devem ser verificados separadamente.
 
-A [visão geral](visao-geral.md) explica as responsabilidades de cada produto.
+A [visão geral](visao-geral.md) descreve as responsabilidades dos produtos.
