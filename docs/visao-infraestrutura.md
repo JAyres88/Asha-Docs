@@ -23,9 +23,9 @@ No ambiente atual, o Portal, o gateway, o túnel e o registro local de imagens f
 
 Hoje os endereços públicos preparados são portal.sysgen.win, gestao.sysgen.win, pdv.sysgen.win e login.sysgen.win. Integration, Provisioning, SQL Server e RabbitMQ permanecem internos. A existência do DNS e do túnel não comprova que uma versão específica esteja em execução; a implantação e a saúde dos serviços devem ser verificadas separadamente.
 
-## Alocação quando um cliente se registra: desenho alvo
+## Alocação quando um cliente se registra
 
-A intenção é criar uma instalação completa por cliente, com versão e customizações independentes. O computador pode hospedar várias instalações, mas compartilhar o equipamento não deve misturar seus dados, segredos, rede interna nem ciclo de atualização. O Portal e o Gen.6 continuam como serviços de controle do provedor.
+O fluxo de referência prevê uma instalação completa por cliente, com versão e customizações independentes. O computador pode hospedar várias instalações, mas compartilhar o equipamento não deve misturar seus dados, segredos, rede interna nem ciclo de atualização. O Portal e o Gen.6 continuam como serviços de controle do provedor.
 
 1. **Registro:** o Portal recebe a organização, o administrador inicial, os módulos escolhidos e preferências de operação. Envia ao Gen.6 um pedido com identificador único. A confirmação comercial e as condições de contratação devem ser verificadas antes de alocar recursos.
 2. **Reserva:** o Gen.6 verifica a capacidade disponível do host, reserva CPU, memória e armazenamento estimados e cria um identificador interno estável da instalação. Pedidos repetidos com o mesmo identificador não podem criar uma segunda instalação.
@@ -37,14 +37,6 @@ A intenção é criar uma instalação completa por cliente, com versão e custo
 8. **Falha e repetição:** cada etapa grava estado e diagnóstico. Uma falha permite repetir a etapa sem duplicar volumes, usuários, rotas ou cobranças. Recursos reservados para uma tentativa cancelada precisam ser liberados explicitamente.
 
 A instalação de cada cliente pode ser atualizada ou revertida de forma independente. O provisionador deve manter o mapeamento entre organização, identificador da stack, versão das imagens, volumes, segredos, rotas e licença. A seleção de host e os limites de capacidade devem impedir que um novo cliente comprometa as instalações já ativas.
-
-## O que está implementado agora
-
-O Gen.6 já possui API, worker, armazenamento durável de solicitações, estados de execução, tentativas e retorno de endereços. O Portal envia os dados iniciais. A stack Docker da demonstração é gerada e implantada por scripts operacionais; as imagens são construídas e guardadas no registro local. O acesso público tem gateway e Cloudflare Tunnel configurados.
-
-No modo local atual, a etapa LocalInstallationReadyStep devolve endereços de uma instalação que já existe. Ela não executa as etapas 2 a 7 acima: não reserva capacidade, não cria uma stack nova por organização, não separa banco e mensageria por cliente, não cria rotas próprias e não cadastra automaticamente o administrador. Portanto, o registro de um novo cliente ainda não resulta em alocação dinâmica independente. Essa é a principal implementação pendente no Gen.6.
-
-O código também conserva um adaptador antigo de provisionamento externo, desabilitado na stack Docker atual. Ele não deve ser interpretado como a solução de alocação local descrita aqui.
 
 ## Limites operacionais
 
