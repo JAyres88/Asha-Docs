@@ -15,7 +15,7 @@ A plataforma Asha combina uma base de gestão com produtos especializados. O Por
 
 ## Como os produtos se relacionam
 
-O Portal recebe a organização, os responsáveis e os módulos selecionados e envia um pedido ao Asha. O Asha Onboarding & Deploy registra o andamento e devolve os endereços da instalação configurada. O Asha Identity autentica usuários e serviços. O Asha Gestão mantém os cadastros básicos e o contexto global de módulos e direitos. O Asha Ponto de Venda consulta os cadastros disponibilizados pela Gestão e envia eventos de venda ao Asha.
+O Portal recebe a organização, os responsáveis e os módulos selecionados e envia um pedido ao Asha Onboarding & Deploy. O Asha Onboarding & Deploy registra o andamento e devolve os endereços da instalação configurada. O Asha Identity autentica usuários e serviços. O Asha Gestão mantém os cadastros básicos e o contexto global de módulos e direitos. O Asha Ponto de Venda consulta os cadastros disponibilizados pela Gestão e envia eventos de venda ao Asha Integração.
 
 O PDV consulta dados comuns da Gestão, como locais, tipos de saldo, pessoas e produtos. A edição desses cadastros pertence à Gestão. O Asha Integração media os contratos de sincronização e os eventos entre os produtos.
 

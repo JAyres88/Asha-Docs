@@ -6,7 +6,7 @@ Este documento registra a configuração local e o comportamento que podem ser v
 
 O computador local utiliza Docker Desktop e Docker Swarm. O Traefik encaminha as requisições para as aplicações pela rota de entrada. O domínio sysgen.win usa Cloudflare DNS e Cloudflare Tunnel para levar HTTPS ao gateway. SQL Server, RabbitMQ, Provisioning e APIs internas não têm rotas públicas dedicadas.
 
-A configuração de implantação mantém um registro local de imagens e uma rede Docker chamada main-provider. O manifesto da stack main reúne os aplicativos, SQL Server e RabbitMQ. As imagens são construídas e versionadas por scripts do Asha. Docker secrets e arquivos locais fora do Git fornecem senhas e parâmetros de execução.
+A configuração de implantação mantém um registro local de imagens e uma rede Docker chamada main-provider. O manifesto da stack main reúne os aplicativos, SQL Server e RabbitMQ. As imagens são construídas e versionadas por scripts do Asha Onboarding & Deploy. Docker secrets e arquivos locais fora do Git fornecem senhas e parâmetros de execução.
 
 | Serviço | Uso na configuração local |
 | --- | --- |
