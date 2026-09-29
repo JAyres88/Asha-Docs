@@ -1,6 +1,6 @@
 # Visão de infraestrutura — AS IS
 
-Este documento registra a configuração local e o comportamento que podem ser verificados no código e no manifesto de implantação. Ele não define a arquitetura futura de alocação por cliente.
+Este documento registra a configuração local e o comportamento que podem ser verificados no código e no manifesto de implantação.
 
 ## Hospedagem e publicação
 
