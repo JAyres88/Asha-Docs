@@ -4,7 +4,7 @@ Esta documentação descreve o estado atual da plataforma: os produtos, suas res
 
 1. [Visão geral dos módulos](docs/visao-geral.md) — produtos, responsabilidades, dados compartilhados e acesso.
 2. [Visão de infraestrutura](docs/visao-infraestrutura.md) — serviços, Docker, publicação web e processamento atual do registro de uma organização.
+3. [Nomenclatura Asha e compatibilidade](docs/renomeacao-asha.md) — nomes atuais e preservação dos identificadores da instalação.
+4. [Deploy e atualizações](docs/deploy-e-atualizacoes.md) — atualização do código local, publicação pelo GitHub e acesso remoto aos serviços deste computador.
 
 Os aplicativos estão em .NET 8 nesta etapa.
-
-3. [Nomenclatura Asha e compatibilidade](docs/renomeacao-asha.md) — nomes atuais e preservação dos identificadores da instalação.
