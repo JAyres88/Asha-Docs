@@ -110,12 +110,6 @@ endpoints.MapPost("/interesses", async (
 
 O endpoint ASP.NET Core protege a requisição contra CSRF com antiforgery, valida se os produtos selecionados pertencem ao catálogo obtido pela abstração `IPortalProductCatalog` e delega o envio a `IInterestLeadSender`. A implementação `HttpInterestLeadSender` usa `HttpClient` e serialização JSON para chamar o contrato publicado pelo Integration. Assim, a interface não conhece a implementação HTTP nem o banco de Gestão.
 
-## Limites e leitura recomendada
-
-- **Demonstra SOLID:** composição por interfaces, serviços com papéis distintos, módulos registrados por entrada única.
-- **Demonstra DDD:** agregado Documento, entidade filha, Value Objects, política comercial e eventos de domínio.
-- **Demonstra CQRS:** mensagens distintas e handlers de escrita/leitura com dispatch próprio.
-- **Não deve ser inferido:** isolamento completo de bounded contexts, banco independente por módulo, event sourcing ou um framework CQRS de terceiros.
 
 Leia também a [Aplicações](aplicacoes.md) e a [Infraestrutura](infraestrutura.md). Os códigos podem evoluir; os links apontam para as implementações nos repositórios Asha.
 
