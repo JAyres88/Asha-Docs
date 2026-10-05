@@ -75,14 +75,4 @@ Projetos, CRM, Serviços e MRP II aparecem como propostas na vitrine. Não são 
 
 ## Repositórios
 
-| Componente | Repositório |
-| --- | --- |
-| Portal | [Asha-Portal](https://github.com/JAyres88/Asha-Portal) |
-| Gestão | [Asha-Gestao](https://github.com/JAyres88/Asha-Gestao) |
-| PDV | [Asha-Ponto-de-Venda](https://github.com/JAyres88/Asha-Ponto-de-Venda) |
-| Identity | [Asha-Identity](https://github.com/JAyres88/Asha-Identity) |
-| Integração | [Asha-Integracao](https://github.com/JAyres88/Asha-Integracao) |
-| Onboarding & Deploy | [Asha-Onboarding-Deploy](https://github.com/JAyres88/Asha-Onboarding-Deploy) |
-| Executor | [asha_deployExec](https://github.com/JAyres88/asha_deployExec) |
-
 Veja também [Infraestrutura](infraestrutura.md) e [Visão Técnica](visao-tecnica.md).

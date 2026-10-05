@@ -82,11 +82,5 @@ A esteira seleciona revisões explícitas e verifica migrações e aprovação d
 
 O manifesto básico mantém o envio de provisionamento desabilitado e o worker de onboarding com zero réplicas. Sua ativação depende de configuração. A criação automática de infraestrutura dedicada por cliente não está concluída.
 
-## Referências
-
-- [Manifesto de implantação](https://github.com/JAyres88/Asha-Onboarding-Deploy/blob/main/deploy/stack.yml).
-- [Onboarding & Deploy](https://github.com/JAyres88/Asha-Onboarding-Deploy).
-- [Executor de implantação](https://github.com/JAyres88/asha_deployExec).
-- [Identity](https://github.com/JAyres88/Asha-Identity) e [Integração](https://github.com/JAyres88/Asha-Integracao).
 
 Veja também [Aplicações](aplicacoes.md) e [Visão Técnica](visao-tecnica.md).

@@ -92,19 +92,6 @@ Adaptadores de transporte e persistência mediam aplicações. Pedidos comerciai
 
 A API registra hosted services de consumo e despacho do Outbox. A stack básica publica API e frontend; a existência do projeto Worker não significa sua implantação como serviço separado.
 
-## Asha Onboarding & Deploy
-
-| Projeto ou área | Responsabilidade |
-| --- | --- |
-| src/AshaProvisioning.Domain | Solicitações, operações e estados. |
-| src/AshaProvisioning.Application | Casos de uso, repositórios e abstrações de etapas. |
-| src/AshaProvisioning.Contracts | Pedidos e respostas. |
-| src/AshaProvisioning.Infrastructure | Persistência e etapas locais ou externas. |
-| src/AshaProvisioning.Api | Recepção e consulta de solicitações. |
-| src/AshaProvisioning.Worker | Busca operações prontas e executa etapas habilitadas. |
-| deploy, config, scripts e workflows | Dockerfiles, revisões e automação de publicação. |
-| tests/AshaProvisioning.UnitTests | Testes de regras e preparação. |
-
 O recebimento HTTP é separado do processamento demorado. As etapas permitem acompanhar estados e tentativas sem concentrar a preparação no controller. Há persistência relacional e em memória; a referência usa PostgreSQL. O provisionamento dedicado por cliente permanece uma evolução futura.
 
 Parte dos diretórios mantém AshaProvisioning ou AshaIntegration, embora assemblies e soluções usem nomes atuais dos produtos. Pipeline de onboarding e automação de deploy compartilham repositório, mas têm responsabilidades diferentes.
@@ -115,8 +102,5 @@ O asha_deployExec contém scripts de instalação, configuração de exemplo e w
 
 O Asha-Docs contém quatro arquivos Markdown: README, Infraestrutura, Aplicações e Visão Técnica.
 
-## Referências
-
-As estruturas pertencem a [Gestão](https://github.com/JAyres88/Asha-Gestao), [PDV](https://github.com/JAyres88/Asha-Ponto-de-Venda), [Portal](https://github.com/JAyres88/Asha-Portal), [Identity](https://github.com/JAyres88/Asha-Identity), [Integração](https://github.com/JAyres88/Asha-Integracao), [Onboarding & Deploy](https://github.com/JAyres88/Asha-Onboarding-Deploy) e [deployExec](https://github.com/JAyres88/asha_deployExec).
 
 Veja também [Infraestrutura](infraestrutura.md) e [Aplicações](aplicacoes.md).
