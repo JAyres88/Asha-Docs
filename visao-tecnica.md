@@ -102,8 +102,5 @@ O asha_deployExec contém scripts de instalação, configuração de exemplo e w
 
 O Asha-Docs contém quatro arquivos Markdown: README, Infraestrutura, Aplicações e Visão Técnica.
 
-## Referências
-
-As estruturas pertencem a [Gestão](https://github.com/JAyres88/Asha-Gestao), [PDV](https://github.com/JAyres88/Asha-Ponto-de-Venda), [Portal](https://github.com/JAyres88/Asha-Portal), [Identity](https://github.com/JAyres88/Asha-Identity), [Integração](https://github.com/JAyres88/Asha-Integracao), [Onboarding & Deploy](https://github.com/JAyres88/Asha-Onboarding-Deploy) e [deployExec](https://github.com/JAyres88/asha_deployExec).
 
 Veja também [Infraestrutura](infraestrutura.md) e [Aplicações](aplicacoes.md).
