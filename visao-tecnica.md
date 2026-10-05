@@ -113,6 +113,32 @@ O endpoint ASP.NET Core protege a requisição contra CSRF com antiforgery, vali
 
 Leia também a [Aplicações](aplicacoes.md) e a [Infraestrutura](infraestrutura.md). Os códigos podem evoluir; os links apontam para as implementações nos repositórios Asha.
 
+## Modelo arquitetural comum
+
+As aplicações de negócio adotam a mesma direção de dependências, ainda que o nível de granularidade varie por produto:
+
+```text
+Host/API → Application → Domain
+              ↑             ↑
+          Contracts ────────┘
+Infrastructure → Application + Contracts + Domain
+```
+
+O host é a raiz de composição: configura HTTP, autenticação e dependências. Application coordena comandos, consultas e políticas de aplicação. Domain contém regras e invariantes. Contracts publica mensagens e dados de fronteira. Infrastructure implementa persistência, integrações e serviços técnicos. A dependência aponta para dentro; Domain não referencia ASP.NET, banco de dados ou adaptadores externos.
+
+| Aplicação | Organização física atual | Observação |
+| --- | --- | --- |
+| Gestão | Projetos por módulo e camada, além de BuildingBlocks e Persistence. | Maior granularidade; módulos têm assemblies próprios. |
+| Ponto de Venda | Projetos compartilhados Domain, Contracts, Application e Infrastructure, compilando os diretórios de módulo correspondentes. | Mantém módulos organizados por pasta; não cria ainda um assembly por módulo. A API é o host e ponto de composição. |
+| Portal | Domain, Application, Infrastructure, WebAPI e hosts Web/Client. | Separação do fluxo comercial e dos adaptadores HTTP. |
+| Integração | Domain, Application, Infrastructure, Contracts, Api, Worker e Frontend. | Transporte, recepção e entrega permanecem em adaptadores. |
+| Onboarding & Deploy | Domain, Application, Infrastructure, Contracts, Api e Worker. | Host HTTP e execução em segundo plano têm responsabilidades próprias. |
+| Identity | Web, Contracts e Client. | Exceção justificada: é um provedor OpenID Connect baseado em ASP.NET Identity/OpenIddict; fluxos de protocolo, cookies, usuário persistido e endpoints de conta são acoplados às abstrações do framework. A separação deve ocorrer por responsabilidades reais, sem inventar um domínio de negócio vazio. |
+
+Essa padronização define dependências e responsabilidades, não obriga que toda aplicação tenha os mesmos nomes de pastas nem um projeto por módulo. Gestão usa assemblies independentes por módulo; o PDV usa assemblies horizontais por camada. Em ambos, o host pode compor os módulos no mesmo processo e continuar sendo um monólito modular.
+
+Na extração do PDV, handlers e perfis AutoMapper passaram a residir no assembly Application e a configuração foi ajustada para descobri-los ali. Paginação que usa EF Core foi movida para Infrastructure, e anotações Swagger foram retiradas das entidades de domínio. Isso preserva as fronteiras sem alterar o contrato HTTP.
+
 ## Asha Gestão
 
 | Área | Responsabilidade |
@@ -131,14 +157,18 @@ O monólito modular compartilha host e banco, permitindo coordenar transações 
 
 | Área | Responsabilidade |
 | --- | --- |
-| Projeto de API na raiz | Host e composição do backend. |
-| Modules | Venda, Caixa, Documentos, Estoque, Fiscal, PosVenda, Pessoas, Precificacao, CatalogoLocal, IdentidadeAcesso, Administracao, Configuracao e Integracao. |
-| BuildingBlocks | Entidades, agregados, eventos, comandos, consultas, erros, IUnitOfWork e IClock. |
+| src/Asha.PontoDeVenda.Domain | BuildingBlocks e modelos Domain de todos os módulos. |
+| src/Asha.PontoDeVenda.Contracts | DTOs de fronteira e contratos CQRS publicados pelos módulos. |
+| src/Asha.PontoDeVenda.Application | Handlers, políticas e coordenação dos casos de uso. |
+| src/Asha.PontoDeVenda.Infrastructure | Persistência, repositórios, consultas, integrações e serviços técnicos. |
+| Projeto de API na raiz | Host HTTP, controllers e composição do backend. |
+| Modules | Venda, Caixa, Documentos, Estoque, Fiscal, PosVenda, Pessoas, Precificacao, CatalogoLocal, IdentidadeAcesso, Administracao, Configuracao e Integracao; seus arquivos são compilados nos projetos de camada acima. |
+| BuildingBlocks | Componentes compartilhados incluídos nos projetos de camada, sem criar dependência do Domain para Infrastructure. |
 | Frontend/Asha/Asha | Host web da interface e comunicação com a API. |
 | Frontend/Asha/Asha.Client | Interface Blazor WebAssembly. |
 | Tests | Testes de regras e contratos HTTP. |
 
-Os módulos organizam código dentro do projeto de API, diferentemente das bibliotecas separadas da Gestão. A fundação DDD é incremental. AppDbContext implementa a unidade de trabalho e um middleware traduz erros de domínio para a fronteira HTTP.
+Os projetos de camada do PDV geram DLLs próprias e são referenciados pela API. A organização interna continua modular por pastas; ainda não há um projeto por módulo como na Gestão. AppDbContext implementa a unidade de trabalho e um middleware traduz erros de domínio para a fronteira HTTP.
 
 ## Asha Portal
 
