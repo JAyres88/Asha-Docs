@@ -1,10 +1,15 @@
 # Documentação da plataforma Asha
 
-Esta documentação descreve o estado atual da plataforma: os produtos, suas responsabilidades e a infraestrutura local configurada. Decisões de arquitetura futura serão documentadas após definição do responsável pelo produto.
+A Asha reúne aplicações de gestão, ponto de venda, identidade, integração e entrada comercial, com uma esteira de implantação em contêineres.
 
-1. [Visão geral dos módulos](docs/visao-geral.md) — produtos, responsabilidades, dados compartilhados e acesso.
-2. [Visão de infraestrutura](docs/visao-infraestrutura.md) — serviços, Docker, publicação web e processamento atual do registro de uma organização.
-3. [Nomenclatura Asha e compatibilidade](docs/renomeacao-asha.md) — nomes atuais e preservação dos identificadores da instalação.
-4. [Deploy e atualizações](docs/deploy-e-atualizacoes.md) — atualização do código local, publicação pelo GitHub e acesso remoto aos serviços deste computador.
+Este repositório público contém quatro arquivos: este índice e três documentos que descrevem o código e a configuração de referência verificados em **5 de outubro de 2026**.
 
-Os aplicativos estão em .NET 8 nesta etapa.
+| Documento | Conteúdo |
+| --- | --- |
+| [Infraestrutura](infraestrutura.md) | Tecnologias, componentes de apoio, hospedagem, banco de dados, mensageria e implantação. |
+| [Aplicações](aplicacoes.md) | Responsabilidades de cada aplicação e fluxos entre os produtos. |
+| [Visão Técnica](visao-tecnica.md) | Padrões de projeto e macroestrutura de cada repositório. |
+
+A descrição distingue recursos implementados, opções dependentes de configuração e funcionalidades futuras. Código e manifestos não comprovam disponibilidade dos serviços em tempo real.
+
+Os repositórios de implementação referenciados podem exigir permissão de acesso. Credenciais e arquivos operacionais privados não integram esta documentação.
