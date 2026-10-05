@@ -2,13 +2,13 @@
 
 A Asha reúne aplicações de gestão, ponto de venda, identidade, integração e entrada comercial, com uma esteira de implantação em contêineres.
 
-Este repositório público contém quatro arquivos: este índice e três documentos que descrevem o código e a configuração de referência verificados em **5 de outubro de 2026**.
+Este repositório público contém este índice e três documentos que descrevem o código e a configuração de referência verificados em **5 de outubro de 2026**.
 
 | Documento | Conteúdo |
 | --- | --- |
 | [Infraestrutura](infraestrutura.md) | Tecnologias, componentes de apoio, hospedagem, banco de dados, mensageria e implantação. |
 | [Aplicações](aplicacoes.md) | Responsabilidades de cada aplicação e fluxos entre os produtos. |
-| [Visão Técnica](visao-tecnica.md) | Padrões de projeto e macroestrutura de cada repositório. |
+| [Visão Técnica](visao-tecnica.md) | SOLID, DDD, CQRS, IoC/DI, bibliotecas e exemplos, além da macroestrutura dos projetos. |
 
 A descrição distingue recursos implementados, opções dependentes de configuração e funcionalidades futuras. Código e manifestos não comprovam disponibilidade dos serviços em tempo real.
 
